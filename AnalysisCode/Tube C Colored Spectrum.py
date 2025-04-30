@@ -67,8 +67,9 @@ colors = [wavelength_to_rgb(wl) for wl in bin_centers]
 for i in range(len(bin_centers)):
     plt.bar(bin_centers[i], counts[i], width= 1, color=colors[i], edgecolor='black', linewidth=0.5)
 
+plt.ylabel('Lines')
 plt.xlabel('Wavelength (nm)')
 plt.xlim(380, 700)
-plt.title('Tube C Spectrum (Colored by Wavelength)')
+plt.title('Tube C: Number of Lines vs Wavelengths (Colored by Wavelength)')
 
 plt.show()
