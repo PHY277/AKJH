@@ -1,0 +1,73 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+data = np.array([
+    496.40771515, 504.69488114, 512.96821066, 526.72572963, 532.21756437,
+ 548.6538919,  556.84960579, 567.75343792, 575.91318161, 578.62959855,
+ 581.34425289, 586.76824067, 589.4775576,  594.89079625, 600.29678634,
+ 602.99704259, 605.695462,   613.77961707, 616.47060701, 621.84694507,
+ 624.53227681, 632.57682474, 632.57682474, 643.27587351, 645.94575723,
+ 651.27961356, 659.26549845, 661.92345442, 683.11383528, 693.65934251
+])
+
+def wavelength_to_rgb(wavelength):
+    gamma = 0.8
+    intensity_max = 255
+    factor = 0.0
+    R = G = B = 0.0
+
+    if 380 <= wavelength <= 440:
+        R = -(wavelength - 440) / (440 - 380)
+        G = 0.0
+        B = 1.0
+    elif 440 < wavelength <= 490:
+        R = 0.0
+        G = (wavelength - 440) / (490 - 440)
+        B = 1.0
+    elif 490 < wavelength <= 510:
+        R = 0.0
+        G = 1.0
+        B = -(wavelength - 510) / (510 - 490)
+    elif 510 < wavelength <= 580:
+        R = (wavelength - 510) / (580 - 510)
+        G = 1.0
+        B = 0.0
+    elif 580 < wavelength <= 645:
+        R = 1.0
+        G = -(wavelength - 645) / (645 - 580)
+        B = 0.0
+    elif 645 < wavelength <= 780:
+        R = 1.0
+        G = 0.0
+        B = 0.0
+
+    if 380 <= wavelength <= 420:
+        factor = 0.3 + 0.7 * (wavelength - 380) / (420 - 380)
+    elif 420 < wavelength <= 700:
+        factor = 1.0
+    elif 700 < wavelength <= 780:
+        factor = 0.3 + 0.7 * (780 - wavelength) / (780 - 700)
+    else:
+        factor = 0.0
+
+    def correct(color, factor):
+        if color == 0.0:
+            return 0
+        return round(intensity_max * pow(color * factor, gamma))
+
+    return (correct(R, factor)/255, correct(G, factor)/255, correct(B, factor)/255)
+
+counts, bins = np.histogram(data, bins=34)
+bin_centers = 0.5 * (bins[:-1] + bins[1:])
+bin_widths = np.diff(bins)
+
+colors = [wavelength_to_rgb(wl) for wl in bin_centers]
+
+for i in range(len(bin_centers)):
+    plt.bar(bin_centers[i], counts[i], width= 1, color=colors[i], edgecolor='black', linewidth=0.5)
+
+plt.xlabel('Wavelength (nm)')
+plt.xlim(450, 700)
+plt.title('Tube B Spectrum (Colored by Wavelength)')
+
+plt.show()
